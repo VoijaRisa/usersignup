@@ -21,23 +21,29 @@ def welcome():
     password = request.form["password"]
     password2 = request.form["password2"]
     email = request.form["email"]
-    
-    if username == "":
-        error = "That's not a valid username."
-        return redirect("/?nameerror=" + error + "&username=" + username + "&email=" + email)
 
-    if password != password2:
-        error = "Passwords don't match."
-        return redirect("/?pwerror=" + error + "&username=" + username + "&email=" + email)
+    error = ""
+    nameerror = ""
+    pwerror = ""
+    emailerror=""
+    
+    if username == "" or len(username) < 3 or len(username) > 20:
+        nameerror = "nameerror=That's not a valid username."
 
     if " " in password or len(password) < 3 or len(password) > 20:
-        error = "That is not a valid password"
-        return redirect("/?pwerror=" + error + "&username=" + username + "&email=" + email)
+        pwerror = "&pwerror=That is not a valid password"
+
+
+    if password != password2:
+        pwerror = "&pwerror=Passwords don't match."
 
     if email != "":
         if "@" not in email or "." not in email or len(email) < 3 or len(email) > 20:
-            error = "That is not a valid email"
-            return redirect("/?emailerror=" + error + "&username=" + username + "&email=" + email)
+            emailerror = "&emailerror=Invalid email"
+
+    if nameerror != "" or pwerror != "" or emailerror != "":
+        error = error + nameerror + pwerror + emailerror + "&username=" + username + "&email=" + email
+        return redirect("/?" + error)
     
     return render_template("welcome.html", username=username)
 
